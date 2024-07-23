@@ -8,12 +8,13 @@ import torch.nn as nn
 
 
 class Autoencoder(nn.Module):
-    def __init__(self, input_dim):
+    def __init__(self, num_features):
         super(Autoencoder, self).__init__()
+        self.num_features = num_features
 
         # Encoder
         self.encoder = nn.Sequential(
-            nn.Linear(120, 84),
+            nn.Linear(self.num_features, 84),
             nn.LeakyReLU(),
             nn.Linear(84, 58),
             nn.LeakyReLU(),
@@ -27,7 +28,7 @@ class Autoencoder(nn.Module):
             nn.LeakyReLU(),
             nn.Linear(58, 84),
             nn.LeakyReLU(),
-            nn.Linear(84, 120),
+            nn.Linear(84, self.num_features),
             nn.Sigmoid()
         )
 

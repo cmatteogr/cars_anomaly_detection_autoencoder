@@ -3,7 +3,10 @@ RELEVANT_PREPROCESS_COLUMNS = ['msrp', 'year', 'model', 'exterior_color', 'inter
                                'mileage', 'make', 'bodystyle', 'fuel_type', 'cat', 'stock_type']
 
 # Artifacts folder
-ARTIFACTS_FOLDER_PATH = 'artifacts'
+ARTIFACTS_FOLDER_PATH = '../artifacts'
+
+# Data folder
+DATA_FOLDER_PATH = '../data'
 
 # Deployment folder
 DEPLOYMENT_FOLDER_PATH = 'deployment_artifacts'

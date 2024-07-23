@@ -18,7 +18,7 @@ import re
 import json
 import os
 
-from constants import RELEVANT_PREPROCESS_COLUMNS, ARTIFACTS_FOLDER_PATH
+from constants import RELEVANT_PREPROCESS_COLUMNS, ARTIFACTS_FOLDER_PATH, DATA_FOLDER_PATH
 
 
 # Apply msrp value
@@ -147,9 +147,9 @@ def map_fuel_type(fuel_type):
             return 'Gasoline'
         case 'Electric' | 'Electric with Ga':
             return 'Electric'
-        case 'Hybrid' | 'Plug-In Hybrid' | 'Plug-in Gas/Elec' | 'Gas/Electric Hyb' | 'Hybrid Fuel' | 'Bio Diesel' | 'Gasoline/Mild Electric Hybrid' | 'Natural Gas':
+        case 'Hybrid' | 'Plug-In Hybrid' | 'Plug-in Gas/Elec' | 'Gas/Electric Hyb' | 'Hybrid Fuel' | 'Bio Diesel' | 'Gasoline/Mild Electric Hybrid' | 'Natural Gas' | 'Electric and Gas Hybrid':
             return 'Hybrid'
-        case 'Flexible Fuel' | 'E85 Flex Fuel' | 'Flexible':
+        case 'Flexible Fuel' | 'E85 Flex Fuel' | 'Flexible' | 'Flex Fuel Capability':
             return 'Flexible'
         case _:
             print(f"No expected fuel type: {fuel_type}")
@@ -241,7 +241,7 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     print(f"Data set shape: {cars_df.shape}")
 
     print(f"Split Dataset train-testcase. train={1 - test_size}, testcase={test_size}")
-    
+
     print("####### Transform data")
     # ### Apply Features transformation
     # Apply msrp transformation
@@ -431,8 +431,7 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
         # fit on the dataset 
         imp.fit(cars_df)
         # Save imnputer model
-        #joblib.dump(imp, os.path.join(ARTIFACTS_FOLDER_PATH, imputer_model_filename))
-        joblib.dump(imp, imputer_model_filename)
+        joblib.dump(imp, os.path.join(ARTIFACTS_FOLDER_PATH, imputer_model_filename))
 
     # Load your model
     imp: IterativeImputer = joblib.load(os.path.join(ARTIFACTS_FOLDER_PATH, imputer_model_filename))
@@ -509,8 +508,18 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     scaler_model_filename = 'preprocess_scaler_model.pkl'
     joblib.dump(scaler, os.path.join(ARTIFACTS_FOLDER_PATH, scaler_model_filename))
 
+    # Save data files
+    cars_o_filepath = os.path.join(DATA_FOLDER_PATH, 'preprocess', 'cars_o.csv')
+    cars_o_df.to_csv(cars_o_filepath, index=False)
+    cars_preprocessed_filepath = os.path.join(DATA_FOLDER_PATH, 'preprocess', 'cars_preprocessed.csv')
+    cars_df.to_csv(cars_preprocessed_filepath, index=False)
+
     # Build preprocess data report
     preprocess_config_data = {
+        'data': {
+            'cars_o_filepath': cars_o_filepath,
+            'cars_preprocessed_filepath': cars_preprocessed_filepath,
+        },
         'preprocess_config': {
             'price_threshold': price_threshold,
             'make_valid_categories': list(make_valid_categories),
@@ -539,4 +548,4 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     print("Preprocess completed")
 
     # Return model
-    return cars_o_df, cars_df, preprocess_config_data
+    return preprocess_config_data
