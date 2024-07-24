@@ -11,6 +11,7 @@ import optuna
 import json
 import pandas as pd
 from train.autoencoder_model import Autoencoder, EarlyStopping
+import time
 
 
 def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_size=32) -> (Autoencoder, dict):
@@ -68,6 +69,9 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
         print('Training autoencoder anomaly detection model')
         reconstruction_error = float('inf')
         for epoch in range(num_epochs):
+            # Start timer
+            start_time = time.perf_counter()
+
             model.train()
             train_loss = 0
             for data in train_loader:
@@ -97,6 +101,11 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
 
             # Save last mse
             reconstruction_error = val_loss
+
+            # End timer
+            end_time = time.perf_counter()
+            elapsed_time = end_time - start_time
+            print("Elapsed time: ", elapsed_time)
 
             # Check for early stopping to avoid overfitting
             if early_stopping.step(val_loss):

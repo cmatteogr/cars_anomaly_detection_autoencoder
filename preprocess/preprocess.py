@@ -147,7 +147,7 @@ def map_fuel_type(fuel_type):
             return 'Gasoline'
         case 'Electric' | 'Electric with Ga':
             return 'Electric'
-        case 'Hybrid' | 'Plug-In Hybrid' | 'Plug-in Gas/Elec' | 'Gas/Electric Hyb' | 'Hybrid Fuel' | 'Bio Diesel' | 'Gasoline/Mild Electric Hybrid' | 'Natural Gas' | 'Electric and Gas Hybrid':
+        case 'Hybrid' | 'Plug-In Hybrid' | 'Plug-in Gas/Elec' | 'Gas/Electric Hyb' | 'Hybrid Fuel' | 'Bio Diesel' | 'Gasoline/Mild Electric Hybrid' | 'Natural Gas' | 'Electric and Gas Hybrid' | 'Gasoline/Mild Electric Hy':
             return 'Hybrid'
         case 'Flexible Fuel' | 'E85 Flex Fuel' | 'Flexible' | 'Flex Fuel Capability':
             return 'Flexible'
@@ -239,8 +239,6 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     cars_df = cars_df[cars_df['make'].isin(make_valid_categories)]
 
     print(f"Data set shape: {cars_df.shape}")
-
-    print(f"Split Dataset train-testcase. train={1 - test_size}, testcase={test_size}")
 
     print("####### Transform data")
     # ### Apply Features transformation
@@ -420,6 +418,9 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     print("Apply stock_type transformation")
     cars_df['stock_type'] = cars_df['stock_type'].map(map_stock_type)
 
+    print(f"Split Dataset train-test. train={1 - test_size}, test={test_size}")
+    train_cars_df, test_cars_df = train_test_split(cars_df, test_size=test_size, random_state=42)
+
     print("####### Imputate data")
     # train/use Impute
     print("Apply Iterative imputation")
@@ -429,7 +430,7 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
         # Train imputer
         imp = IterativeImputer(estimator=RandomForestRegressor(), verbose=1)
         # fit on the dataset 
-        imp.fit(cars_df)
+        imp.fit(train_cars_df)
         # Save imnputer model
         joblib.dump(imp, os.path.join(ARTIFACTS_FOLDER_PATH, imputer_model_filename))
 
@@ -437,9 +438,11 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     imp: IterativeImputer = joblib.load(os.path.join(ARTIFACTS_FOLDER_PATH, imputer_model_filename))
 
     # Apply imputation
-    train_df_trans = imp.transform(cars_df)
+    train_df_trans = imp.transform(train_cars_df)
+    test_df_trans = imp.transform(test_cars_df)
     # transform the dataset 
-    cars_df = pd.DataFrame(train_df_trans, columns=cars_df.columns, index=cars_df.index)
+    train_cars_df = pd.DataFrame(train_df_trans, columns=train_cars_df.columns, index=train_cars_df.index)
+    test_cars_df = pd.DataFrame(test_df_trans, columns=test_cars_df.columns, index=test_cars_df.index)
 
     print("####### Remove outliers data")
     # ### Outliers Removal
@@ -447,30 +450,34 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     iso_forest = IsolationForest(n_estimators=200, contamination=isolation_forest_contamination, random_state=42,
                                  verbose=1)
     # Fit the model
-    iso_forest.fit(cars_df)
+    iso_forest.fit(train_cars_df)
     # Remove outliers 
-    cars_df['outlier'] = iso_forest.predict(cars_df)
+    train_cars_df['outlier'] = iso_forest.predict(train_cars_df)
+    test_cars_df['outlier'] = iso_forest.predict(test_cars_df)
     # Remove global outliers
-    cars_df = cars_df[cars_df['outlier'] != -1]
+    train_cars_df = train_cars_df[train_cars_df['outlier'] != -1]
+    test_cars_df = test_cars_df[test_cars_df['outlier'] != -1]
     # Remove the outlier column
-    cars_df.drop(columns='outlier', inplace=True)
-    # Filter targets
-    cars_df = cars_df[cars_df.index.isin(cars_df.index)]
+    train_cars_df.drop(columns='outlier', inplace=True)
+    test_cars_df.drop(columns='outlier', inplace=True)
 
     print("####### Scale data")
     # Init scaler model
     scaler = MinMaxScaler()
-    scaler.fit(cars_df)
+    scaler.fit(train_cars_df)
     print("Apply Scale Min/Max Transformation")
     # Apply scale transformation
-    train_df_trans = scaler.transform(cars_df)
+    train_df_trans = scaler.transform(train_cars_df)
+    test_df_trans = scaler.transform(test_cars_df)
     # transform the dataset
-    cars_df = pd.DataFrame(train_df_trans, columns=cars_df.columns, index=cars_df.index)
+    train_cars_df = pd.DataFrame(train_df_trans, columns=train_cars_df.columns, index=train_cars_df.index)
+    test_cars_df = pd.DataFrame(test_df_trans, columns=test_cars_df.columns, index=test_cars_df.index)
 
-    print(f"Cars train dataset size after preprocess: {cars_df.shape}")
+    print(f"Cars train dataset size after preprocess: {train_cars_df.shape}")
 
     # Filter the original data
-    cars_o_df = cars_o_df.loc[cars_df.index]
+    cars_o_train_df = cars_o_df.loc[train_cars_df.index]
+    cars_o_test_df = cars_o_df.loc[test_cars_df.index]
 
     # Save preprocess models
     # Save drive train encoding model
@@ -509,16 +516,23 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     joblib.dump(scaler, os.path.join(ARTIFACTS_FOLDER_PATH, scaler_model_filename))
 
     # Save data files
-    cars_o_filepath = os.path.join(DATA_FOLDER_PATH, 'preprocess', 'cars_o.csv')
-    cars_o_df.to_csv(cars_o_filepath, index=False)
-    cars_preprocessed_filepath = os.path.join(DATA_FOLDER_PATH, 'preprocess', 'cars_preprocessed.csv')
-    cars_df.to_csv(cars_preprocessed_filepath, index=False)
+    cars_o_train_filepath = os.path.join(DATA_FOLDER_PATH, 'preprocess', 'cars_o_train.csv')
+    cars_o_train_df.to_csv(cars_o_train_filepath, index=False)
+    cars_train_preprocessed_filepath = os.path.join(DATA_FOLDER_PATH, 'preprocess', 'cars_train_preprocessed.csv')
+    train_cars_df.to_csv(cars_train_preprocessed_filepath, index=False)
+
+    cars_o_test_filepath = os.path.join(DATA_FOLDER_PATH, 'preprocess', 'cars_o_test.csv')
+    cars_o_test_df.to_csv(cars_o_test_filepath, index=False)
+    cars_test_preprocessed_filepath = os.path.join(DATA_FOLDER_PATH, 'preprocess', 'cars_test_preprocessed.csv')
+    test_cars_df.to_csv(cars_test_preprocessed_filepath, index=False)
 
     # Build preprocess data report
     preprocess_config_data = {
         'data': {
-            'cars_o_filepath': cars_o_filepath,
-            'cars_preprocessed_filepath': cars_preprocessed_filepath,
+            'cars_o_train_filepath': cars_o_train_filepath,
+            'cars_train_preprocessed_filepath': cars_train_preprocessed_filepath,
+            'cars_o_test_filepath': cars_o_test_filepath,
+            'cars_test_preprocessed_filepath': cars_test_preprocessed_filepath,
         },
         'preprocess_config': {
             'price_threshold': price_threshold,
