@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
 import optuna
+import json
 import pandas as pd
 from train.autoencoder_model import Autoencoder, EarlyStopping
 
@@ -169,6 +170,14 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
     report_dict = {
         'reconstruction_error': float(reconstruction_error)
     }
+
+    # Save train report
+    with open('train_report.json', 'w') as f:
+        json.dump(report_dict, f)
+
+    # Save model
+    model_filepath = 'anomaly_detection_model.pth'
+    torch.save(model.state_dict(), model_filepath)
 
     print('End training autoencoder anomaly detection model')
     # Return model filepath
