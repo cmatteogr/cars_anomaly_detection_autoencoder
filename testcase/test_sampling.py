@@ -4,7 +4,7 @@ import pandas as pd
 
 def test_random_sampling():
     cars_train_preprocessed_df = pd.read_csv('../data/preprocess/cars_train_preprocessed.csv')
-    sample_size = 20000 # 20K
+    sample_size = 30000 # 20K
     cars_train_preprocessed_sample_df = random_sampling(cars_train_preprocessed_df, sample_size=sample_size)
 
     # Save sample dataframe
