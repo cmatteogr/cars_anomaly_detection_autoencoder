@@ -10,7 +10,8 @@ from torch.utils.data import DataLoader, random_split
 import optuna
 import json
 import pandas as pd
-from train.autoencoder_model import Autoencoder, EarlyStopping
+from models.autoencoder_model import Autoencoder
+from models.callbacks import EarlyStopping
 import time
 
 
@@ -190,4 +191,4 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
 
     print('End training autoencoder anomaly detection model')
     # Return model filepath
-    return model, report_dict
+    return model_filepath, report_dict

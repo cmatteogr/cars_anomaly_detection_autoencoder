@@ -418,7 +418,7 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     print("Apply stock_type transformation")
     cars_df['stock_type'] = cars_df['stock_type'].map(map_stock_type)
 
-    print(f"Split Dataset train-test. train={1 - test_size}, test={test_size}")
+    print(f"Split Dataset train-test_m. train={1 - test_size}, test_m={test_size}")
     train_cars_df, test_cars_df = train_test_split(cars_df, test_size=test_size, random_state=42)
 
     print("####### Imputate data")
