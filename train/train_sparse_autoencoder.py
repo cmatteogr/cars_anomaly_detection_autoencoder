@@ -93,8 +93,8 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
             val_loss = 0
             with torch.no_grad():
                 for inputs in val_loader:
-                    encoded_data, decoded_data = model(data)
-                    loss = model.loss_function(data, decoded_data, encoded_data, beta)
+                    encoded_data, decoded_data = model(inputs)
+                    loss = model.loss_function(inputs, decoded_data, encoded_data, beta)
                     val_loss += loss.item()
 
             # Calculate validation batch loss
@@ -130,9 +130,9 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
     early_stopping_patience = 15
 
     # Init the Autoencoder, loss function metric and optimizer
-    model: SparseRLAutoencoder = SparseRLAutoencoder(num_features)
-    criterion = nn.MSELoss()
+    model: SparseRLAutoencoder = SparseRLAutoencoder(num_features, best_params['rho'])
     optimizer = optim.Adam(model.parameters(), lr=best_params['learning_rate'])
+    beta = best_params['beta']
     # Early stopping is added to avoid overfitting
     early_stopping = EarlyStopping(patience=early_stopping_patience)
 
@@ -144,8 +144,8 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
         train_loss = 0
         for data in train_loader:
             # Forward pass
-            output = model(data)
-            loss = criterion(output, data)
+            encoded_data, decoded_data = model(data)
+            loss = model.loss_function(data, decoded_data, encoded_data, beta)
             train_loss += loss.item()
             # Backward pass
             optimizer.zero_grad()
@@ -159,8 +159,8 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
         val_loss = 0
         with torch.no_grad():
             for inputs in val_loader:
-                outputs = model(inputs)
-                loss = criterion(outputs, inputs)
+                encoded_data, decoded_data = model(inputs)
+                loss = model.loss_function(inputs, decoded_data, encoded_data, beta)
                 val_loss += loss.item()
 
         # Calculate validation batch loss
