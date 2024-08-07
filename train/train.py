@@ -182,11 +182,11 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
     }
 
     # Save train report
-    with open('train_report.json', 'w') as f:
+    with open('train_base_report.json', 'w') as f:
         json.dump(report_dict, f)
 
     # Save model
-    model_filepath = 'anomaly_detection_model.pth'
+    model_filepath = 'anomaly_detection_base_model.pth'
     torch.save(model.state_dict(), model_filepath)
 
     print('End training autoencoder anomaly detection model')

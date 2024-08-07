@@ -12,10 +12,10 @@ import json
 import pandas as pd
 from models.callbacks import EarlyStopping
 import time
-from models.sparce_autoencoder_rl_model import SparseRLAutoencoder
+from models.sparce_autoencoder_rl_model import SparseKLAutoencoder
 
 
-def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_size=32) -> (SparseRLAutoencoder, dict):
+def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_size=32) -> (SparseKLAutoencoder, dict):
     """
     Train Autoencoder anomaly detection model
     :param cars_data_filepath: Cars data filepath
@@ -23,7 +23,7 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
     :param batch_size: Batch size
     :return: Trained Autoencoder anomaly detection model and report dict
     """
-    print('# Start training autoencoder anomaly detection model')
+    print('# Start training sparse autoencoder anomaly detection model')
 
     # Read data
     cars_df = pd.read_csv(cars_data_filepath)
@@ -62,7 +62,7 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
         rho = trial.suggest_float('rho', 0.01, 0.1)
 
         # Init the Autoencoder, loss function metric and optimizer
-        model: SparseRLAutoencoder = SparseRLAutoencoder(num_features, rho)
+        model: SparseKLAutoencoder = SparseKLAutoencoder(num_features, rho)
         optimizer = optim.Adam(model.parameters(), lr=learning_rate)
         # Early stopping is added to avoid overfitting
         early_stopping = EarlyStopping(patience=early_stopping_patience)
@@ -130,7 +130,7 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
     early_stopping_patience = 15
 
     # Init the Autoencoder, loss function metric and optimizer
-    model: SparseRLAutoencoder = SparseRLAutoencoder(num_features, best_params['rho'])
+    model: SparseKLAutoencoder = SparseKLAutoencoder(num_features, best_params['rho'])
     optimizer = optim.Adam(model.parameters(), lr=best_params['learning_rate'])
     beta = best_params['beta']
     # Early stopping is added to avoid overfitting
@@ -183,13 +183,13 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
     }
 
     # Save train report
-    with open('train_report.json', 'w') as f:
+    with open('train_sparce_kl_autoencoder_report_local.json', 'w') as f:
         json.dump(report_dict, f)
 
     # Save model
-    model_filepath = 'anomaly_detection_model.pth'
+    model_filepath = 'anomaly_detection_sparce_kl_autoencoder_model_local.pth'
     torch.save(model.state_dict(), model_filepath)
 
-    print('End training autoencoder anomaly detection model')
+    print('End training sparse autoencoder anomaly detection model')
     # Return model filepath
     return model_filepath, report_dict

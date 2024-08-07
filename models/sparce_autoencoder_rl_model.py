@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 
-class SparseRLAutoencoder(nn.Module):
+class SparseKLAutoencoder(nn.Module):
     def __init__(self, num_features, rho):
-        super(SparseRLAutoencoder, self).__init__()
+        super(SparseKLAutoencoder, self).__init__()
         self.num_features = num_features
         self.rho = rho
 
