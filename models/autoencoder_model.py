@@ -34,6 +34,6 @@ class Autoencoder(nn.Module):
 
     def forward(self, x):
         # Autoencoder
-        x = self.encoder(x)
-        x = self.decoder(x)
-        return x
+        x_latent = self.encoder(x)
+        reconstructed_x = self.decoder(x_latent)
+        return reconstructed_x

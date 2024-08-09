@@ -25,14 +25,14 @@ def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_
     """
     print('# Start training sparse autoencoder anomaly detection model')
 
+    # Check input arguments
+    assert 0.7 <= train_size_percentage < 1, 'Train size percentage should be between 0.7 and 1.'
+    assert 1 <= batch_size <= 256, 'Batch size should be between 1 and 124.'
+
     # Read data
     cars_df = pd.read_csv(cars_data_filepath)
     num_features = cars_df.shape[1]
     cars_data = cars_df.values
-
-    # Check input arguments
-    assert 0.7 <= train_size_percentage < 1, 'Train size percentage should be between 0.7 and 1.'
-    assert 1 <= batch_size <= 256, 'Batch size should be between 1 and 124.'
 
     # Build Autoencoder Anomaly Detection method
     # Convert to PyTorch tensor
