@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import pandas as pd
 from sklearn.neighbors import NearestNeighbors
-from models.sparce_autoencoder_rl_model import SparseKLAutoencoder
+from models.sparce_autoencoder_kl_model import SparseKLAutoencoder
 
 properties_data_filepath = './data/preprocess/cars_test_preprocessed.csv'
 properties_o_data_filepath = './data/preprocess/cars_o_test.csv'

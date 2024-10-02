@@ -7,21 +7,21 @@ import torch
 import torch.nn as nn
 import pandas as pd
 import json
-from models.sparce_autoencoder_rl_model import SparseKLAutoencoder
+from models.sparce_autoencoder_kl_model import SparseKLAutoencoder
 
 
-def test(model_filepath: str, properties_data_filepath) -> str:
+def test(model_filepath: str, cars_data_filepath) -> str:
     """
     Test Autoencoder anomaly detection model
     :param model_filepath: anomaly detection model filepath to evaluate
-    :param properties_data_filepath: Test data file path
+    :param cars_data_filepath: Test data file path
     :return: test_m report
     """
     print('Start testing sparse autoencoder anomaly detection model')
     # Transform data to tensors
-    properties_df = pd.read_csv(properties_data_filepath)
-    n_features = len(properties_df.columns)
-    tensor_data = torch.tensor(properties_df.values, dtype=torch.float32)
+    cars_df = pd.read_csv(cars_data_filepath)
+    n_features = len(cars_df.columns)
+    tensor_data = torch.tensor(cars_df.values, dtype=torch.float32)
     rho = 0.09092432031023191
 
     # Apply reconstruction

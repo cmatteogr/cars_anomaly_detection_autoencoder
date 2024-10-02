@@ -12,7 +12,7 @@ import json
 import pandas as pd
 from models.callbacks import EarlyStopping
 import time
-from models.sparce_autoencoder_rl_model import SparseKLAutoencoder
+from models.sparce_autoencoder_kl_model import SparseKLAutoencoder
 
 
 def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_size=32) -> (SparseKLAutoencoder, dict):
