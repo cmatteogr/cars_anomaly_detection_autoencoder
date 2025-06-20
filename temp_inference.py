@@ -17,7 +17,7 @@ tensor_data = torch.tensor(properties_df.values, dtype=torch.float32)
 rho = 0.09092432031023191
 
 # Apply reconstruction
-print('evaluate model on test_m data')
+print('evaluate model on evaluation data')
 model = SparseKLAutoencoder(n_features, rho)
 model.load_state_dict(torch.load(model_filepath))
 model.eval()

@@ -8,7 +8,7 @@ def random_sampling(data_df: pd.DataFrame, sample_size=1000):
     # Generate synthetic data
     random_sample_df = data_df.sample(n=sample_size, random_state=42)
 
-    # Perform K-S test_m
+    # Perform K-S evaluation
     for column in random_sample_df.columns:
         ks_stat, p_value = ks_2samp(data_df[column], random_sample_df[column])
         print(f"Random Sampling column '{column}': KS Statistic = {ks_stat}, p-value = {p_value}")
