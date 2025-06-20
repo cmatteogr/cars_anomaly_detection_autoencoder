@@ -1,4 +1,4 @@
-from test_m.test import test as test_model
+from evaluation.evaluate_autoencoder import test as test_model
 
 
 def test_train_autoencoder():

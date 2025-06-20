@@ -3,7 +3,14 @@ import pandas as pd
 from scipy.stats import ks_2samp
 
 
-def random_sampling(data_df: pd.DataFrame, sample_size=1000):
+def random_sampling(data_df: pd.DataFrame, sample_size=1000) ->pd.DataFrame:
+    """
+    select randomly samples from a dataframe
+    :param data_df: dataframe to sample
+    :param sample_size: sample size
+    :return: return sample dataframe
+    """
+    # Check input arguments
     assert data_df.shape[0] > sample_size, 'Sample size must be smaller than or equal to number of data points'
     # Generate synthetic data
     random_sample_df = data_df.sample(n=sample_size, random_state=42)

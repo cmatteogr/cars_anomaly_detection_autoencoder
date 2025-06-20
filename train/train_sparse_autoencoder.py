@@ -1,6 +1,5 @@
 """
 Author: Cesar M. Gonzalez
-
 Train Autoencoder anomaly detection model
 """
 import torch
@@ -17,7 +16,7 @@ from models.sparce_autoencoder_kl_model import SparseKLAutoencoder
 
 def train_autoencoder(cars_data_filepath: str, train_size_percentage=0.8, batch_size=32) -> (SparseKLAutoencoder, dict):
     """
-    Train Autoencoder anomaly detection model
+    Train Autoencoder for sparse anomaly detection model
     :param cars_data_filepath: Cars data filepath
     :param train_size_percentage: Train size percentage, remaining is validation size
     :param batch_size: Batch size

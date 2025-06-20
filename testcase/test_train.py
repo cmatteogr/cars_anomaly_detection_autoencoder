@@ -1,4 +1,4 @@
-from train.train import train_autoencoder
+from train.train_autoencoder import train_autoencoder
 
 
 def test_train_autoencoder():

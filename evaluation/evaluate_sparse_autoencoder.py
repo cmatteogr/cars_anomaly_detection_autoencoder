@@ -1,6 +1,5 @@
 """
 Author: Cesar M. Gonzalez
-
 Test Autoencoder anomaly detection model
 """
 import torch
@@ -28,8 +27,10 @@ def test(model_filepath: str, cars_data_filepath) -> str:
     print('evaluate model on evaluation data')
     model = SparseKLAutoencoder(n_features, rho)
     model.load_state_dict(torch.load(model_filepath))
+    # Set the model to evaluation mode
     model.eval()
     criterion = nn.MSELoss()
+    # Calculate the reconstruction error
     encoded_data, decoded_data = model(tensor_data)
     reconstruction_error = criterion(decoded_data, tensor_data)
 

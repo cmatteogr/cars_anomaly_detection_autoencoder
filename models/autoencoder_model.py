@@ -1,6 +1,5 @@
 """
 Author: Cesar M. Gonzalez
-
 Autoencoder anomaly detection model
 """
 
@@ -12,6 +11,7 @@ class Autoencoder(nn.Module):
         super(Autoencoder, self).__init__()
         self.num_features = num_features
 
+        # this is Vanilla autoencoder
         # Encoder
         self.encoder = nn.Sequential(
             nn.Linear(self.num_features, 84),

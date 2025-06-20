@@ -1,4 +1,11 @@
+"""
+
+"""
+
 class EarlyStopping:
+    """
+    Early stopping used in the training
+    """
     def __init__(self, patience=10, min_delta=0):
         self.patience = patience
         self.min_delta = min_delta

@@ -1,6 +1,5 @@
 """
 Author: Cesar M. Gonzalez
-
 Train Autoencoder anomaly detection model
 """
 import torch

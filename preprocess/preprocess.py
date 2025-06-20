@@ -25,7 +25,6 @@ from constants import RELEVANT_PREPROCESS_COLUMNS, ARTIFACTS_FOLDER_PATH, DATA_F
 def map_msrp(msrp):
     """
     Replace 0 values by null
-
     :param msrp: manufacturer's suggested retail price
     """
     if msrp == 0:
@@ -34,6 +33,11 @@ def map_msrp(msrp):
 
 
 def clean_exterior_color(exterior_color):
+    """
+    Clean exterior color feature
+    :param exterior_color: text to clean
+    :return: text cleaned
+    """
     # Check if value is empty
     if pd.isna(exterior_color):
         return 'unknown'
@@ -50,6 +54,12 @@ def clean_exterior_color(exterior_color):
 
 
 def get_exterior_color_phrase_vector(exterior_color_phrase, model):
+    """
+    transform exterior color text to vector
+    :param exterior_color_phrase: text to transform
+    :param model: model word to vector
+    :return: text vector
+    """
     exterior_color_words = exterior_color_phrase.split()
     exterior_color_word_vectors = [model.wv[word] for word in exterior_color_words if word in model.wv]
     if not exterior_color_word_vectors:
@@ -59,6 +69,11 @@ def get_exterior_color_phrase_vector(exterior_color_phrase, model):
 
 
 def clean_interior_color(interior_color):
+    """
+    Clean interior color feature
+    :param interior_color: text to clean
+    :return: text cleaned
+    """
     # Check if value is empty
     if pd.isna(interior_color):
         return 'unknown'
@@ -73,6 +88,12 @@ def clean_interior_color(interior_color):
 
 
 def get_interior_color_phrase_vector(interior_color_phrase, model):
+    """
+    transform interior color text to vector
+    :param interior_color_phrase: text to transform
+    :param model: model word to vector
+    :return: text vector
+    """
     interior_color_words = interior_color_phrase.split()
     interior_color_word_vectors = [model.wv[word] for word in interior_color_words if word in model.wv]
     if not interior_color_word_vectors:
@@ -84,9 +105,7 @@ def get_interior_color_phrase_vector(interior_color_phrase, model):
 def map_drivetrain(drivetrain):
     """
     Group the drive train by categories
-
     :param drivetrain: Car drive train
-
     :return: Grouped drive train
     """
     if pd.isna(drivetrain):
@@ -94,6 +113,7 @@ def map_drivetrain(drivetrain):
     # Apply lower case and replace special characters
     drivetrain = str(drivetrain).lower().replace('-', ' ')
 
+    # NOTE: this feature may be an open vocabulary, so another strategy may be considered
     match drivetrain:
         case 'all wheel drive' | 'four wheel drive' | 'awd' | '4wd' | '4x2' | 'all wheel drive with locking and limited slip differential' | '4matic':
             return 'All-wheel Drive'
@@ -108,6 +128,11 @@ def map_drivetrain(drivetrain):
 
 
 def clean_cat(cat):
+    """
+    Clean cat feature
+    :param cat: text to clean
+    :return: text cleaned
+    """
     # Check if value is empty
     if pd.isna(cat):
         return 'unknown'
@@ -123,6 +148,12 @@ def clean_cat(cat):
 
 # Calculate the vectors feature avegare
 def get_cat_phrase_vector(cat_phrase, model):
+    """
+    transform cat_phrase text to vector
+    :param cat_phrase: text to transform
+    :param model: model word to vector
+    :return: text vector
+    """
     cat_words = cat_phrase.split()
     cat_word_vectors = [model.wv[word] for word in cat_words if word in model.wv]
     if not cat_word_vectors:
@@ -134,14 +165,13 @@ def get_cat_phrase_vector(cat_phrase, model):
 def map_fuel_type(fuel_type):
     """
     Group by fuel types
-
     :param fuel_type: Car fuel type
-
     :return: Fuel type category
     """
     if pd.isna(fuel_type):
         return np.nan
 
+    # NOTE: this feature may be an open vocabulary, so another strategy may be considered
     match fuel_type:
         case 'Gasoline' | 'Gasoline Fuel' | 'Diesel' | 'Premium Unleaded' | 'Regular Unleaded' | 'Premium Unleaded' | 'Diesel Fuel':
             return 'Gasoline'
@@ -158,10 +188,8 @@ def map_fuel_type(fuel_type):
 
 def map_stock_type(stock_type):
     """
-    Map stock_type
-
+    Map stock_type to binary value
     :param stock_type: stock type New/Used
-
     :return: Binary stock_type
     """
     if pd.isna(stock_type):
@@ -181,7 +209,6 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
                cat_vector_size=3, train_inputer=False, isolation_forest_contamination=0.1):
     """
     Preprocess cars data
-
     :param cars_filepath: Cars datasource filepath
     :param test_size: Test size to split dataset
     :param price_threshold: Price min value threshold
@@ -192,9 +219,7 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     :param cat_vector_size: cat vector size
     :param train_inputer: Indicates whether imputer model is trained or not
     :param isolation_forest_contamination: Outlier removal contamination
-
     :return: cars_df, y_train, X_test, y_test, preprocess_config_data
-    
     """
     print("Star preprocess")
 
@@ -483,7 +508,7 @@ def preprocess(cars_filepath, test_size=0.2, price_threshold=1500, make_frequenc
     # Save drive train encoding model
     print("Save preprocess models")
 
-    # Save Hasher model model
+    # Save Hasher model
     hasher_model_model_filename = 'preprocess_hasher_model_model.pkl'
     joblib.dump(hasher_model_model, os.path.join(ARTIFACTS_FOLDER_PATH, hasher_model_model_filename))
     # Save Drive train encoding model

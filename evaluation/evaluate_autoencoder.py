@@ -1,6 +1,5 @@
 """
 Author: Cesar M. Gonzalez
-
 Test Autoencoder anomaly detection model
 """
 from models.autoencoder_model import Autoencoder
@@ -27,8 +26,10 @@ def test(model_filepath: str, properties_data_filepath) -> str:
     print('evaluate model on evaluation data')
     model = Autoencoder(n_features)
     model.load_state_dict(torch.load(model_filepath))
+    # Set the model to evaluation mode
     model.eval()
     criterion = nn.MSELoss()
+    # Calculate the reconstruction error
     reconstruction_data = model(tensor_data)
     reconstruction_error = criterion(reconstruction_data, tensor_data)
 
