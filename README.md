@@ -29,3 +29,9 @@ Execute the script temp_inference.py to start the model inference.
 python temp_inference.py
 ```
 **NOTE**: Depending on the model to train the resources/time needed change so be patient or be sure you are using appropriate CPU-GPU instance.
+
+## External Resoruces
+This project was built by the Medellín Machine Learning - Study Group (MML-SG) community. In the following [link](https://drive.google.com/drive/u/0/folders/1nPMtg6caIef5o9S_J8WyNEvyEt5sO1VH) you can find the meetings records about it:
+* [2. Exploración de Modelos de ML y Exploración de Datos (2024-02-28 19:14 GMT-5)](https://drive.google.com/file/d/1mqpccGVjhOQTDV5c80RKk1ECNnK6DCqn/view?usp=drive_link)
+* [6. Implementación de la Detección de Anomalías (2024-04-17 19:09 GMT-5)](https://drive.google.com/file/d/1NU6CLKnL_O4xxduqQlrtPCgiFCZQKiI4/view?usp=drive_link)
+* [7. Evaluación del Modelo y Resultados de la Detección de Anomalías (2024-04-24 19:09 GMT-5)](https://drive.google.com/file/d/1IFQ1AFlBal3UAFbdfB474GRovBOQUXaw/view?usp=drive_link)
